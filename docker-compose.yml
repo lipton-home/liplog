@@ -1,0 +1,47 @@
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: liplog
+
+  openSearch:
+    image: opensearchproject/opensearch:latest
+    ports:
+      - 9200:9200
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=false
+      - plugins.security.ssl.http.enabled=false
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Admin123ax1@!
+      - plugins.security.allow_default_init_securityindex=true
+  
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    ports:
+      - 5601:5601
+    environment:
+      - OPENSEARCH_HOSTS=["http://openSearch:9200"]
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=Admin123ax1@!
+    depends_on:
+      - openSearch
+      
+volumes:
+  redis_data:
+  postgres_data:
+  opensearch_data:

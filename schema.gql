@@ -1,0 +1,16 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AccessToken {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type Mutation {
+  getAccessTokenByRefreshToken(refreshToken: String!): AccessToken!
+}
+
+type Query {
+  healthCheck: String!
+}

@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  githubId  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  content     String     @db.Text // 마크다운 콘텐츠
+  description String?    @db.Text // 포스트 설명
+  status      PostStatus @default(DRAFT) // DRAFT, PUBLISHED, ARCHIVED
+  isPublic    Boolean    @default(false)
+  thumbnailId Int
+  authorId    Int
+  viewCount   Int        @default(0)
+  likeCount   Int        @default(0)
+  tags        String[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  publishedAt DateTime?
+
+  thumbnail   Attachment  @relation(fields: [thumbnailId], references: [id])
+  author      User         @relation(fields: [authorId], references: [id])
+  blocks      Block[]
+
+  @@index([authorId])
+  @@index([status])
+  @@index([isPublic])
+}
+
+model Block {
+  id       Int       @id @default(autoincrement())
+  type     BlockType
+  content  String    @db.Text // 블록 콘텐츠 (마크다운 또는 JSON)
+  order    Int // 블록 순서
+  postId   Int
+  parentId Int?
+  metadata Json?
+  attachmentId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Block?  @relation("BlockHierarchy", fields: [parentId], references: [id])
+  children Block[] @relation("BlockHierarchy")
+  post     Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  attachment Attachment? @relation(fields: [attachmentId], references: [id])
+
+  @@index([postId])
+  @@index([parentId])
+  @@index([order])
+}
+
+model Attachment {
+  id           Int     @id @default(autoincrement())
+  filename     String // 원본 파일명
+  originalName String // 사용자가 업로드한 파일명
+  mimeType     String // MIME 타입
+  size         Int // 파일 크기 (bytes)
+  bucket       String // S3 버킷명
+  key          String // S3 키
+  url          String // 공개 URL
+  postId       Int?
+  width        Int? // 이미지인 경우 너비
+  height       Int? // 이미지인 경우 높이
+  alt          String? // 이미지 대체 텍스트
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+  blocks Block[]
+  
+  @@index([postId])
+  @@index([mimeType])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BlockType {
+  PARAGRAPH
+  HEADING_1
+  HEADING_2
+  HEADING_3
+  BULLETED_LIST
+  NUMBERED_LIST
+  TOGGLE_LIST
+  QUOTE
+  CODE
+  IMAGE
+  VIDEO
+  EMBED
+  DIVIDER
+  TABLE
+  CHECKBOX
+}
