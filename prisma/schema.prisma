@@ -26,7 +26,6 @@ model User {
 model Post {
   id          Int        @id @default(autoincrement())
   title       String
-  content     String     @db.Text // 마크다운 콘텐츠
   description String?    @db.Text // 포스트 설명
   status      PostStatus @default(DRAFT) // DRAFT, PUBLISHED, ARCHIVED
   isPublic    Boolean    @default(false)
