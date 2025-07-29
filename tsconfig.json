@@ -17,8 +17,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "types": ["node","jest"],
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "test/**/*"]
+    "types": ["node", "jest"]
+  }
 }

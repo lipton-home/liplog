@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { OpensearchModule } from './opensearch/opensearch.module';
 import { PostsModule } from './posts/posts.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PostsModule } from './posts/posts.module';
     RedisModule,
     OpensearchModule,
     PostsModule,
+    UsersModule,
   ],
 
   controllers: [AppController],

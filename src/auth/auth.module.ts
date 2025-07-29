@@ -15,7 +15,7 @@ import { AuthGuard } from './guards/auth.guard';
     HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
         signOptions: { expiresIn: '7d' },
       }),

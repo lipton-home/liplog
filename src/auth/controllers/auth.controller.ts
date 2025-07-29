@@ -1,8 +1,8 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { AuthService } from '../services/auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
@@ -36,8 +36,8 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    const frontendUrl = this.configService.get(
-      'FRONTEND_URL',
+    const frontendUrl = this.configService.get<string>(
+      'FRONTEND_URL ',
       'http://localhost:3000',
     );
 
