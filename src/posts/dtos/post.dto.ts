@@ -43,4 +43,6 @@ export class PostDto implements Post {
 
   @Field(() => Date, { nullable: true })
   publishedAt: Date | null;
+
+  deletedAt: Date | null;
 }
