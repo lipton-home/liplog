@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@prisma/client';
 import { firstValueFrom, map } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -16,29 +15,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
   ) {}
-
-  public async authenticateByGithub(args: { code: string }): Promise<User> {
-    const { code } = args;
-
-    const accessToken = await this.getGithubAccessToken({ code });
-
-    const data = await this.getGithubUser({ accessToken });
-
-    const user = await this.prisma.user.upsert({
-      where: {
-        githubId: data.id.toString(),
-      },
-      update: {
-        name: data.login,
-      },
-      create: {
-        githubId: data.id.toString(),
-        name: data.login,
-      },
-    });
-
-    return user;
-  }
 
   public async createRefreshToken(args: { userId: number }): Promise<string> {
     const { userId } = args;
@@ -75,7 +51,7 @@ export class AuthService {
     return Number(userId);
   }
 
-  private async getGithubUser(args: {
+  public async getGithubUser(args: {
     accessToken: string;
   }): Promise<GithubUserDto> {
     const data = await firstValueFrom<GithubUserDto>(
@@ -89,7 +65,7 @@ export class AuthService {
     return data;
   }
 
-  private async getGithubAccessToken(args: { code: string }): Promise<string> {
+  public async getGithubAccessToken(args: { code: string }): Promise<string> {
     const clientId = this.configService.getOrThrow<string>('GITHUB_CLIENT_ID');
     const clientSecret = this.configService.getOrThrow<string>(
       'GITHUB_CLIENT_SECRET',

@@ -1,19 +1,22 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
+import { Field, InputType, Int } from '@nestjs/graphql';
 
-@InputType("CreatePostInput")
+@InputType('CreatePostInput')
 export class CreatePostDto {
-    @Field(() => String)
-    title: string;
+  @Field(() => String)
+  title: string;
 
-    @Field(() => String, { nullable: true })
-    description?: string;
+  @Field(() => String, { nullable: true })
+  description: string | null;
 
-    @Field(() => [String])
-    tags: string[];
+  @Field(() => String)
+  content: string;
 
-    @Field(() => Boolean)
-    isPublic: boolean;
+  @Field(() => [String])
+  tags: string[];
 
-    @Field(() => Int, { nullable: true })
-    thumbnailId?: number;
+  @Field(() => Boolean)
+  isPublic: boolean;
+
+  @Field(() => Int, { nullable: true })
+  thumbnailId: number | null;
 }

@@ -1,4 +1,5 @@
-import { User } from '@prisma/client';
+import { RequestContext } from './src/request-context';
+import { UserDto } from './src/users/dtos/user.dto';
 
 declare global {
   interface BigInt {
@@ -7,7 +8,8 @@ declare global {
 
   namespace Express {
     interface Request {
-      user?: User;
+      context: RequestContext;
+      user?: UserDto;
     }
   }
 }

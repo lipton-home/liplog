@@ -1,42 +1,46 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
-import { PostStatus } from "@prisma/client";
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Post, PostStatus } from '@prisma/client';
 
-@InputType()
-export class PostDto {
-    @Field(() => Int)
-    id: number;
+@ObjectType('Post')
+export class PostDto implements Post {
+  @Field(() => ID)
+  id: number;
 
-    @Field(() => String)
-    title: string;
+  @Field(() => String)
+  title: string;
 
-    @Field(() => String, { nullable: true })
-    description?: string | null;
+  @Field(() => String, { nullable: true })
+  description: string | null;
 
-    @Field(() => Int)
-    viewCount: number;
+  @Field(() => String)
+  content: string;
 
-    @Field(() => Int)
-    likeCount: number;
+  @Field(() => Int)
+  viewCount: number;
 
-    @Field(() => [String])
-    tags: string[];
+  @Field(() => Int)
+  likeCount: number;
 
-    @Field(() => PostStatus)
-    status: PostStatus;
+  @Field(() => [String])
+  tags: string[];
 
-    @Field(() => Boolean)
-    isPublic: boolean;
+  @Field(() => PostStatus)
+  status: PostStatus;
 
-    thumbnailId: number;
-    
-    authorId: number;
+  @Field(() => Boolean)
+  isPublic: boolean;
 
-    @Field(() => Date)
-    createdAt: Date;
+  thumbnailId: number | null;
 
-    @Field(() => Date)
-    updatedAt: Date;
+  @Field(() => Int)
+  authorId: number;
 
-    @Field(() => Date, { nullable: true })
-    publishedAt?: Date | null;
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
+
+  @Field(() => Date, { nullable: true })
+  publishedAt: Date | null;
 }

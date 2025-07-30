@@ -2,6 +2,7 @@ import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { UsersService } from 'src/users/services/users.service';
 import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
@@ -10,11 +11,22 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Get('github/callback')
   async githubCallback(@Query('code') code: string, @Res() res: Response) {
-    const user = await this.authService.authenticateByGithub({ code });
+    const accessToken = await this.authService.getGithubAccessToken({ code });
+    const githubUser = await this.authService.getGithubUser({ accessToken });
+
+    const user =
+      (await this.usersService.findByGithubId({
+        githubId: githubUser.id.toString(),
+      })) ??
+      (await this.usersService.createUser({
+        githubId: githubUser.id.toString(),
+        name: githubUser.login,
+      }));
 
     const refreshToken = await this.authService.createRefreshToken({
       userId: user.id,

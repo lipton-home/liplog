@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { AuthService } from '../services/auth.service';
-import { AccessTokenDto } from '../dtos/access-token.dto';
 import { JwtService } from '@nestjs/jwt';
+import { AccessTokenDto } from '../dtos/access-token.dto';
+import { AuthService } from '../services/auth.service';
 
 @Resolver()
 export class AuthResolver {
@@ -12,9 +12,11 @@ export class AuthResolver {
 
   @Mutation(() => AccessTokenDto)
   async getAccessTokenByRefreshToken(
-    @Args('refreshToken') refreshToken: string,
+    @Args('refreshToken', { type: () => String }) refreshToken: string,
   ): Promise<AccessTokenDto> {
-    const userId =  await this.authService.getUserIdByRefreshToken({refreshToken});
+    const userId = await this.authService.getUserIdByRefreshToken({
+      refreshToken,
+    });
 
     const accessToken = this.jwtService.sign({ sub: userId });
 

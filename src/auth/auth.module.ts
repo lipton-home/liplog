@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './services/auth.service';
-import { AuthController } from './controllers/auth.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
-import { JwtModule } from '@nestjs/jwt';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { RedisModule } from 'src/redis/redis.module';
-import { AuthResolver } from './resolvers/auth.resolver';
+import { UsersModule } from 'src/users/users.module';
+import { AuthController } from './controllers/auth.controller';
 import { AuthGuard } from './guards/auth.guard';
+import { AuthResolver } from './resolvers/auth.resolver';
+import { AuthService } from './services/auth.service';
 
+@Global()
 @Module({
   imports: [
     PrismaModule,
@@ -22,8 +24,10 @@ import { AuthGuard } from './guards/auth.guard';
       inject: [ConfigService],
     }),
     RedisModule,
+    UsersModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthResolver, AuthGuard],
+  exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}
