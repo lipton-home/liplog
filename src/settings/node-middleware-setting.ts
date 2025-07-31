@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 
 export function nodeMiddlewareSetting(app: INestApplication) {

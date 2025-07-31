@@ -1,5 +1,10 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Post, PostStatus } from '@prisma/client';
+
+registerEnumType(PostStatus, {
+  name: 'PostStatus',
+  description: '포스트 상태',
+});
 
 @ObjectType('Post')
 export class PostDto implements Post {

@@ -7,10 +7,71 @@ type AccessToken {
   refreshToken: String!
 }
 
+input CreatePostInput {
+  content: String!
+  description: String
+  isPublic: Boolean!
+  tags: [String!]!
+  thumbnailId: Int
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Mutation {
+  createPost(input: CreatePostInput!): Post!
+  deletePost(id: ID!): Post!
+  deleteUser(userId: ID!): User!
   getAccessTokenByRefreshToken(refreshToken: String!): AccessToken!
+  updatePost(id: ID!, input: UpdatePostInput!): Post!
+  updateUser(name: String!, userId: ID!): User!
+}
+
+type Post {
+  authorId: Int!
+  content: String!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isPublic: Boolean!
+  likeCount: Int!
+  publishedAt: DateTime
+  status: PostStatus!
+  tags: [String!]!
+  title: String!
+  updatedAt: DateTime!
+  viewCount: Int!
+}
+
+"""포스트 상태"""
+enum PostStatus {
+  ARCHIVED
+  DRAFT
+  PUBLISHED
 }
 
 type Query {
   healthCheck: String!
+  me: User
+  post(id: ID!): Post
+  user(userId: ID!): User
+}
+
+input UpdatePostInput {
+  content: String
+  description: String
+  isPublic: Boolean
+  tags: [String!]
+  thumbnailId: Int
+  title: String
+}
+
+type User {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
 }

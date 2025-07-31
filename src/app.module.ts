@@ -35,7 +35,7 @@ import { UsersModule } from './users/users.module';
         return graphQLFormattedError;
       },
       context: ({ req }: { req: Request }) => {
-        return req.context;
+        return { req };
       },
     }),
     AuthModule,

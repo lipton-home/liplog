@@ -71,16 +71,35 @@ export class AuthService {
       'GITHUB_CLIENT_SECRET',
     );
 
-    const { access_token } = await firstValueFrom<{ access_token: string }>(
-      this.httpService
-        .post('https://github.com/login/oauth/access_token', {
-          client_id: clientId,
-          client_secret: clientSecret,
-          code: args.code,
-        })
-        .pipe(map((res) => res.data as { access_token: string })),
-    );
+    try {
+      const response = await firstValueFrom(
+        this.httpService
+          .post('https://github.com/login/oauth/access_token', {
+            client_id: clientId,
+            client_secret: clientSecret,
+            code: args.code,
+          }, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          })
+      );
 
-    return access_token;
+      const data = response.data;
+      
+      if (data.error) {
+        throw new Error(`GitHub OAuth error: ${data.error_description || data.error}`);
+      }
+
+      if (!data.access_token) {
+        throw new Error('GitHub access token not received');
+      }
+
+      return data.access_token;
+    } catch (error) {
+      console.error('GitHub OAuth token exchange failed:', error);
+      throw error;
+    }
   }
 }

@@ -1,4 +1,7 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { CurrentUser } from 'src/global/decorators/current-user.decorator';
 import { UserDto } from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
 
@@ -11,6 +14,12 @@ export class UsersResolver {
     @Args('userId', { type: () => ID }) userId: number,
   ): Promise<UserDto | null> {
     return this.usersService.findByUserId({ userId });
+  }
+
+  @UseGuards(AuthGuard)
+  @Query(() => UserDto, { nullable: true })
+  me(@CurrentUser() user: UserDto): UserDto {
+    return user;
   }
 
   @Mutation(() => UserDto)

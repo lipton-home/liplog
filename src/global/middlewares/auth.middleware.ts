@@ -16,23 +16,37 @@ export class AuthMiddleware implements NestMiddleware {
     private readonly usersService: UsersService,
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token || !token.startsWith('Bearer ')) {
+    let token: string | undefined;
+    
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+    
+    if (!token && req.cookies?.access_token) {
+      token = req.cookies.access_token;
+    }
+
+    if (!token) {
       return next();
     }
 
-    const decoded = await this.jwtService.verifyAsync<{ sub: number }>(token, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-    });
+    try {
+      const decoded = await this.jwtService.verifyAsync<{ sub: number }>(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
 
-    const user = await this.usersService.findByUserId({ userId: decoded.sub });
+      const user = await this.usersService.findByUserId({ userId: decoded.sub });
 
-    if (!user) {
-      return next(new UnauthorizedException('User not found'));
+      if (!user) {
+        return next(new UnauthorizedException('User not found'));
+      }
+
+      req.user = user;
+      return next();
+    } catch (error) {
+      // JWT 검증 실패시 인증 없이 진행 (선택적 인증)
+      return next();
     }
-
-    req.user = user;
-
-    return next();
   }
 }

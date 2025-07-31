@@ -34,6 +34,7 @@
     "@opensearch-project/opensearch": "^2.2.0",
     "@prisma/client": "^6.12.0",
     "axios": "^1.11.0",
+    "cookie-parser": "^1.4.7",
     "graphql": "^16.11.0",
     "ioredis": "^5.6.1",
     "passport": "^0.7.0",
